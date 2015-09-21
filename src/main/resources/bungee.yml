@@ -1,0 +1,4 @@
+name: ServerTags
+main: de.themoep.servertags.bungee.ServerTags
+version: '${minecraft.plugin.version}'
+author: Phoenix616

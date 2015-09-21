@@ -1,0 +1,5 @@
+name: ServerTags
+main: de.themoep.servertags.bukkit.ServerTags
+version: '${minecraft.plugin.version}'
+author: Phoenix616
+depend: [Vault]
