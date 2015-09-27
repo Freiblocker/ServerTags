@@ -1,16 +1,12 @@
 package de.themoep.servertags.bukkit;
 
-import com.google.common.collect.ImmutableMap;
+import com.dthielke.herochat.ChannelChatEvent;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
-import net.milkbowl.vault.chat.Chat;
-
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -38,55 +34,24 @@ public class ServerTags extends JavaPlugin implements PluginMessageListener, Lis
 
     private Map<UUID, ServerInfo> serverMap = new HashMap<UUID, ServerInfo>();
 
-    private String format;
-
-    private static Chat chat = null;
-
-    private static String DEFAULT_FORMAT = "%name% %tag%";
-
     @Override
     public void onEnable() {
         getServer().getMessenger().registerIncomingPluginChannel(this, getDescription().getName(), this);
         getServer().getPluginManager().registerEvents(this, this);
-        if(setupChat()) {
-            getLogger().log(Level.INFO, "Found " + chat.getName());
-        } else {
-            getLogger().log(Level.WARNING, "Could not find any compatible chat plugin! You will not see prefixes in chat!");
-        }
-        loadConfig();
-    }
-
-    private void loadConfig() {
-        reloadConfig();
-        format = getConfig().getString("prefixformat");
-        if(format == null) {
-            format = DEFAULT_FORMAT;
-            getConfig().set("prefixformat", DEFAULT_FORMAT);
-            saveConfig();
-        }
-        getLogger().info("Format: " + format);
-    }
-
-    private boolean setupChat() {
-        RegisteredServiceProvider<Chat> chatProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
-        if(chatProvider != null) {
-            chat = chatProvider.getProvider();
-        }
-        return (chat != null);
     }
 
     @EventHandler
-    public void onPlayerServerInfoChange(PlayerServerInfoChangeEvent event) {
-        String prefix = format;
-        Map<String, String> replacements = ImmutableMap.of(
-                "name", event.getServer().getName(),
-                "tag", event.getServer().getTag()
-        );
-        for(Map.Entry<String, String> e : replacements.entrySet()) {
-            prefix = prefix.replace("%" + e.getKey() + "%", e.getValue());
+    public void onChannelChatEvent(ChannelChatEvent event) {
+        String format;
+        format = event.getFormat().replace("{default}", event.getChannel().getFormatSupplier().getStandardFormat());
+        if(serverMap.containsKey(event.getSender().getPlayer().getUniqueId()))        {
+            format = format.replace("{servertag}", "[" + serverMap.get(event.getSender().getPlayer().getUniqueId()).getTag() + "]");
+            format = format.replace("{servername}", "[" + serverMap.get(event.getSender().getPlayer().getUniqueId()).getName() + "]");
+        } else {
+            format = format.replace("{servertag}", "");
+            format = format.replace("{servername}", "");
         }
-        getLogger().info("Player " + event.getPlayer().getName() + " comes from server " + event.getServer().getName() + "/" + event.getServer().getTag());
-        chat.setPlayerPrefix(event.getPlayer(), ChatColor.translateAlternateColorCodes('&', prefix));
+        event.setFormat(format);
     }
 
     /**
@@ -104,9 +69,7 @@ public class ServerTags extends JavaPlugin implements PluginMessageListener, Lis
             ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
             try {
                 String subchannel = in.readUTF();
-                if("reload".equalsIgnoreCase(subchannel)) {
-                    loadConfig();
-                } else if("serverInfo".equalsIgnoreCase(subchannel)) {
+                if("serverInfo".equalsIgnoreCase(subchannel)) {
                     try {
                         String playername = in.readUTF();
                         Player player = getServer().getPlayer(playername);

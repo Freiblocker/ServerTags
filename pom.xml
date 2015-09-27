@@ -23,8 +23,8 @@
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
         <repository>
-            <id>vault-repo</id>
-            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+            <id>escapecraft-repo</id>
+            <url>http://dev.escapecraft.com/maven/</url>
         </repository>
     </repositories>
 
@@ -40,10 +40,9 @@
             <version>1.8.8-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>net.milkbowl.vault</groupId>
-            <artifactId>VaultAPI</artifactId>
-            <version>1.5</version>
-            <scope>provided</scope>
+            <groupId>com.herocraftonline</groupId>
+            <artifactId>HeroChat</artifactId>
+            <version>5.6.6.b-214</version>
         </dependency>
     </dependencies>
 
