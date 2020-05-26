@@ -36,7 +36,7 @@ public class ServerTags extends JavaPlugin implements PluginMessageListener, Lis
 
     @Override
     public void onEnable() {
-        getServer().getMessenger().registerIncomingPluginChannel(this, getDescription().getName(), this);
+        getServer().getMessenger().registerIncomingPluginChannel(this, getDescription().getName().toLowerCase() + ":info", this);
         getServer().getPluginManager().registerEvents(this, this);
     }
 
@@ -65,39 +65,35 @@ public class ServerTags extends JavaPlugin implements PluginMessageListener, Lis
 
     @Override
     public void onPluginMessageReceived(String channel, Player receiver, byte[] bytes) {
-        if(channel.equalsIgnoreCase(getDescription().getName())) {
+        if(channel.startsWith(getDescription().getName().toLowerCase() + ":")) {
             ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
-            try {
-                String subchannel = in.readUTF();
-                if("serverInfo".equalsIgnoreCase(subchannel)) {
-                    try {
-                        String playername = in.readUTF();
-                        Player player = getServer().getPlayer(playername);
-                        if(player != null) {
-                            ServerInfo server = new ServerInfo("", "");
-                            try {
-                                String name = in.readUTF();
-                                String tag = in.readUTF();
-                                getLogger().info(name + " - " + tag);
-                                server = new ServerInfo(name, tag);
-                            } catch(IllegalStateException e) {
-                                getLogger().log(Level.WARNING, "No server name or tag send in plugin message. Assuming empty one!");
-                            }
-                            ServerInfo oldServer = serverMap.put(player.getUniqueId(), server);
-                            if(!server.equals(oldServer)) {
-                                getServer().getPluginManager().callEvent(new PlayerServerInfoChangeEvent(player, server, oldServer));
-                            }
-                        } else {
-                            getLogger().log(Level.WARNING, "The player with the name " + playername + " is not online (anymore?)");
+            String subchannel = channel.split(":")[1];
+            if("info".equalsIgnoreCase(subchannel)) {
+                try {
+                    String playername = in.readUTF();
+                    Player player = getServer().getPlayer(playername);
+                    if(player != null) {
+                        ServerInfo server = new ServerInfo("", "");
+                        try {
+                            String name = in.readUTF();
+                            String tag = in.readUTF();
+                            getLogger().info(name + " - " + tag);
+                            server = new ServerInfo(name, tag);
+                        } catch(IllegalStateException e) {
+                            getLogger().log(Level.WARNING, "No server name or tag send in plugin message. Assuming empty one!");
                         }
-                    } catch(IllegalStateException e) {
-                        getLogger().log(Level.SEVERE, "No playername in plugin message!");
+                        ServerInfo oldServer = serverMap.put(player.getUniqueId(), server);
+                        if(!server.equals(oldServer)) {
+                            getServer().getPluginManager().callEvent(new PlayerServerInfoChangeEvent(player, server, oldServer));
+                        }
+                    } else {
+                        getLogger().log(Level.WARNING, "The player with the name " + playername + " is not online (anymore?)");
                     }
-                } else {
-                    getLogger().log(Level.WARNING, "The subchannel " + subchannel + " is not supported!");
+                } catch(IllegalStateException e) {
+                    getLogger().log(Level.SEVERE, "No playername in plugin message!");
                 }
-            } catch(IllegalStateException e) {
-                getLogger().log(Level.SEVERE, "No subchannel send in plugin message!");
+            } else {
+                getLogger().log(Level.WARNING, "The subchannel " + subchannel + " is not supported!");
             }
         }
     }

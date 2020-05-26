@@ -18,9 +18,7 @@ import net.md_5.bungee.event.EventHandler;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -49,7 +47,8 @@ public class ServerTags extends Plugin implements Listener {
     @Override
     public void onEnable() {
         if(loadConfig()) {
-            getProxy().registerChannel(getDescription().getName());
+            getProxy().registerChannel(getDescription().getName().toLowerCase() + ":getinfo");
+            getProxy().registerChannel(getDescription().getName().toLowerCase() + ":info");
             getProxy().getPluginManager().registerListener(this, this);
             getProxy().getPluginManager().registerCommand(this, new ServerTagsCommand());
         }
@@ -68,29 +67,25 @@ public class ServerTags extends Plugin implements Listener {
         tag = config.getString("tag", "");
         getLogger().log(Level.INFO, "Server tag: " + tag);
         for(ProxiedPlayer p : getProxy().getPlayers()) {
-            sendPluginMessage(p.getServer(), "serverInfo", p.getName(), name, tag);
+            sendPluginMessage(p.getServer(), "info", p.getName(), name, tag);
         }
         return true;
     }
 
     @EventHandler
     public void onPluginMessageReceive(PluginMessageEvent event) {
-        if(event.getTag().equalsIgnoreCase(getDescription().getName())) {
+        if(event.getTag().startsWith(getDescription().getName() + ":")) {
             ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
+            String subchannel = event.getTag().split(":")[1];
             try {
-                String subchannel = in.readUTF();
-                try {
-                    String playername = in.readUTF();
-                    if("getServerInfo".equalsIgnoreCase(subchannel)) {
-                        sendPluginMessage(event.getSender(), "serverInfo", playername, name, tag);
-                    } else {
-                        getLogger().log(Level.WARNING, "The subchannel " + subchannel + " is not supported!");
-                    }
-                } catch(IllegalStateException e) {
-                    getLogger().log(Level.SEVERE, "No playername in plugin message!");
+                String playername = in.readUTF();
+                if("getInfo".equalsIgnoreCase(subchannel)) {
+                    sendPluginMessage(event.getSender(), "serverInfo", playername, name, tag);
+                } else {
+                    getLogger().log(Level.WARNING, "The subchannel " + subchannel + " is not supported!");
                 }
             } catch(IllegalStateException e) {
-                getLogger().log(Level.SEVERE, "No subchannel send in plugin message!");
+                getLogger().log(Level.SEVERE, "No playername in plugin message!");
             }
         }
     }
@@ -102,14 +97,13 @@ public class ServerTags extends Plugin implements Listener {
 
     private void sendPluginMessage(Connection connection, String subchannel, String... args) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF(subchannel);
         for(String s : args) {
             out.writeUTF(s);
         }
         if(connection instanceof Server) {
-            ((Server) connection).sendData(getDescription().getName(), out.toByteArray());
+            ((Server) connection).sendData(getDescription().getName().toLowerCase() + ":" + subchannel.toLowerCase(), out.toByteArray());
         } else if(connection instanceof ProxiedPlayer) {
-            ((ProxiedPlayer) connection).sendData(getDescription().getName(), out.toByteArray());
+            ((ProxiedPlayer) connection).sendData(getDescription().getName().toLowerCase() + ":" + subchannel.toLowerCase(), out.toByteArray());
         } else {
             getLogger().log(Level.SEVERE, "Tried to send a plugin message on a connection which doesn't support it!");
         }
