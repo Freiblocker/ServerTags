@@ -19,10 +19,6 @@
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
         <repository>
-            <id>escapecraft-repo</id>
-            <url>http://dev.escapecraft.com/maven/</url>
-        </repository>
-        <repository>
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
@@ -33,12 +29,6 @@
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>1.13.2-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.herocraftonline</groupId>
-            <artifactId>HeroChat</artifactId>
-            <version>5.6.6.b-214</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

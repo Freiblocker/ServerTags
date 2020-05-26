@@ -1,10 +1,8 @@
 package de.themoep.servertags.bukkit;
 
-import com.dthielke.herochat.ChannelChatEvent;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
-import de.themoep.servertags.bukkit.integrations.HeroChatIntegration;
 import de.themoep.servertags.bukkit.integrations.PlaceholderApiIntegration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -39,9 +37,6 @@ public class ServerTags extends JavaPlugin implements PluginMessageListener, Lis
     public void onEnable() {
         getServer().getMessenger().registerIncomingPluginChannel(this, getDescription().getName().toLowerCase() + ":info", this);
         getServer().getPluginManager().registerEvents(this, this);
-        if(getServer().getPluginManager().getPlugin("HeroChat") != null) {
-            new HeroChatIntegration(this);
-        }
         if(getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new PlaceholderApiIntegration(this);
         }
