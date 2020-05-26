@@ -22,6 +22,10 @@
             <id>escapecraft-repo</id>
             <url>http://dev.escapecraft.com/maven/</url>
         </repository>
+        <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -35,6 +39,13 @@
             <groupId>com.herocraftonline</groupId>
             <artifactId>HeroChat</artifactId>
             <version>5.6.6.b-214</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.10.6</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
