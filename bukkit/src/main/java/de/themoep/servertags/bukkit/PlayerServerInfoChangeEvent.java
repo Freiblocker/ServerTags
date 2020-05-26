@@ -1,13 +1,12 @@
 package de.themoep.servertags.bukkit;
 
-import de.themoep.servertags.bukkit.ServerInfo;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
-/**
+/*
  * ServerTags
- * Copyright (C) 2015 Max Lee (https://github.com/Phoenix616/)
+ * Copyright (C) 2020 Max Lee aka Phoenix616 (mail@moep.tv)
  * <p/>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

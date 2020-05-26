@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
-/**
+/*
  * ServerTags
- * Copyright (C) 2015 Max Lee (https://github.com/Phoenix616/)
+ * Copyright (C) 2020 Max Lee aka Phoenix616 (mail@moep.tv)
  * <p/>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
