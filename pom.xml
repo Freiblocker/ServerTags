@@ -23,7 +23,6 @@
         <build.number>${buildNumber}</build.number>
         <minecraft.plugin.version>${plugin.version} ${buildDescription}</minecraft.plugin.version>
         <plugin.version>1.1-SNAPSHOT</plugin.version>
-        <plugin.name>${project.name}</plugin.name>
     </properties>
 
     <profiles>
