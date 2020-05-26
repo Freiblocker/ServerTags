@@ -4,6 +4,7 @@ import com.dthielke.herochat.ChannelChatEvent;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
+import de.themoep.servertags.bukkit.integrations.HeroChatIntegration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -38,20 +39,9 @@ public class ServerTags extends JavaPlugin implements PluginMessageListener, Lis
     public void onEnable() {
         getServer().getMessenger().registerIncomingPluginChannel(this, getDescription().getName().toLowerCase() + ":info", this);
         getServer().getPluginManager().registerEvents(this, this);
-    }
-
-    @EventHandler
-    public void onChannelChatEvent(ChannelChatEvent event) {
-        String format;
-        format = event.getFormat().replace("{default}", event.getChannel().getFormatSupplier().getStandardFormat());
-        if(serverMap.containsKey(event.getSender().getPlayer().getUniqueId()))        {
-            format = format.replace("{servertag}", "[" + serverMap.get(event.getSender().getPlayer().getUniqueId()).getTag() + "]");
-            format = format.replace("{servername}", "[" + serverMap.get(event.getSender().getPlayer().getUniqueId()).getName() + "]");
-        } else {
-            format = format.replace("{servertag}", "");
-            format = format.replace("{servername}", "");
+        if(getServer().getPluginManager().getPlugin("HeroChat") != null) {
+            new HeroChatIntegration(this);
         }
-        event.setFormat(format);
     }
 
     /**
